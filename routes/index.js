@@ -1,6 +1,7 @@
 var express = require('express');
-const { WebhookClient } = require('dialogflow-fulfillment');
 var router = express.Router();
+
+const { WebhookClient } = require('dialogflow-fulfillment');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
