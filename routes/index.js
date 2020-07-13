@@ -1,6 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request')
+var admin = require('firebase-admin');
+
+const ServiceAccount = require('../service-key.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(ServiceAccount),
+  databaseURL: 'https://cp-product-db.firebaseio.com'
+});
+
+const db = admin.firestore();
 
 const { WebhookClient } = require('dialogflow-fulfillment');
 const { get } = require('request');
@@ -10,13 +20,18 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+
 router.post('/webhook', (req,res) => {
   const agent = new WebhookClient({
     request : req, response : res
   });
 
-  function getCategory(agent){
-    agent.add('Category From Database');
+  async function getCategory(agent){
+    //agent.add('Category From Database');
+    const snapshot = await db.collection('product').get();
+    snapshot.forEach((doc) => {
+      agent.add((doc.data()).name);
+    });
   }
 
    async function getPayment(agent){
